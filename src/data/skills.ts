@@ -1,4 +1,4 @@
-import { SkillCategory } from '../types'
+import type { SkillCategory } from '../types'
 
 export const skills: {
   cpp: SkillCategory
@@ -6,90 +6,63 @@ export const skills: {
   math: SkillCategory
 } = {
   cpp: {
-    name: 'C++ SYSTEMS',
+    name: 'C++ Systems',
     items: [
       {
-        label: 'Data Structures',
+        label: 'Core Language',
         detail:
-          'Arrays, heaps, hash maps, priority queues, segment trees, sorted containers',
+          'Solid understanding of modern C++20 for building production-quality programs from scratch with correct memory management.',
       },
       {
-        label: 'Algorithms',
-        detail: 'Complexity analysis, sorting, DP, graph traversal',
-      },
-      {
-        label: 'Modern C++',
+        label: 'Architecture',
         detail:
-          'C++20, RAII, move semantics, smart pointers, templates, concepts, std::variant, std::optional, ranges, views',
+          'Designed and built an entire database query language (mmqli) including the text processing and execution logic.',
       },
       {
-        label: 'Concurrency',
+        label: 'Development Flow',
         detail:
-          'std::thread, std::jthread, atomics, mutexes, condition variables, lock-free patterns',
+          'Comfortable compiling, building, and managing projects directly from the terminal using CMake and Make.',
       },
       {
-        label: 'Performance',
+        label: 'Upcoming Training',
         detail:
-          'Cache-friendly layouts (SoA/AoS), perf, Valgrind, AddressSanitizer, ThreadSanitizer, UBSanitizer',
-      },
-      { label: 'Build & Test', detail: 'CMake, Make, GoogleTest, GoogleBenchmark' },
-      {
-        label: 'Bridge',
-        detail: 'pybind11 — C++ to Python with zero-copy where possible',
-      },
-      {
-        label: 'Interpreter Dev',
-        detail:
-          'Lexer/parser design, query execution without AST, arbitrary precision arithmetic (Boost, GMP, MPFR)',
+          'Currently building toward formal algorithms, efficient data structures, and high-performance multithreading.',
       },
     ],
   },
   python: {
-    name: 'PYTHON RESEARCH',
+    name: 'Python',
     items: [
       {
-        label: 'Numerical',
-        detail: 'NumPy — vectorization, broadcasting, linear algebra',
+        label: 'Current Status',
+        detail:
+          'Have introductory knowledge of the language but have not yet used it for any serious or professional scripting.',
       },
       {
-        label: 'Data',
+        label: 'Upcoming Training',
         detail:
-          'pandas — time series, groupby, rolling, resample, Parquet I/O, multi-index',
+          'Serious study of Python for data research and machine learning is a planned goal for a future phase.',
       },
-      { label: 'Statistics', detail: 'statsmodels — OLS, ARIMA, ADF; scipy.stats' },
-      { label: 'ML', detail: 'scikit-learn, LightGBM, XGBoost, Optuna, SHAP' },
-      { label: 'Visualization', detail: 'matplotlib, seaborn' },
-      { label: 'Workflow', detail: 'Jupyter Lab, reproducible notebooks, yfinance' },
     ],
   },
   math: {
-    name: 'MATHEMATICS',
+    name: 'Mathematics',
     items: [
       {
-        label: 'Proofs & Logic',
-        detail: 'Formal proof techniques — direct, contrapositive, induction, set theory',
+        label: 'Foundations',
+        detail:
+          'Functional understanding of university-level calculus, linear algebra, and basic probability.',
       },
       {
-        label: 'Linear Algebra',
-        detail: 'Vector spaces, eigenvalues, LU/QR/SVD, PCA, covariance matrices',
+        label: 'Current Focus',
+        detail:
+          'Actively building formal mathematical maturity through proof-writing and rigorous logic exercises.',
       },
       {
-        label: 'Probability',
-        detail: 'Combinatorics through LLN/CLT, Bayes, conditional expectation, distributions',
+        label: 'Upcoming Training',
+        detail:
+          'Preparing for future deep-dives into statistics, time series analysis, and stochastic calculus.',
       },
-      {
-        label: 'Statistics',
-        detail: 'OLS, hypothesis testing, IC, walk-forward, Bonferroni, multiple testing correction',
-      },
-      {
-        label: 'Stochastic Calc',
-        detail: "Itô's lemma, risk-neutral pricing, HJB equation, stochastic control",
-      },
-      {
-        label: 'Derivatives',
-        detail: 'Black-Scholes, Greeks, binomial trees, volatility surface',
-      },
-      { label: 'Time Series', detail: 'ARMA/GARCH, stationarity, cointegration, ADF' },
     ],
   },
 }

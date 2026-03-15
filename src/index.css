@@ -21,7 +21,14 @@
   body {
     @apply bg-bg-primary text-text-primary font-terminal text-[14px] leading-[1.6];
     margin: 0;
-    overflow: hidden;
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--bg-tertiary) var(--bg-primary);
+  }
+
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--bg-tertiary) var(--bg-primary);
   }
 
   pre {
@@ -30,19 +37,95 @@
 }
 
 /* CRT Scanline effect */
-.crt-overlay::before {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-  z-index: 2;
-  background-size: 100% 4px, 3px 100%;
-  pointer-events: none;
+.crt-overlay {
+  background:
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%),
+    linear-gradient(
+      90deg,
+      rgba(255, 0, 0, 0.03),
+      rgba(0, 255, 0, 0.01),
+      rgba(0, 0, 255, 0.03)
+    ),
+    radial-gradient(
+      circle at center,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.3) 100%
+    );
+  background-size:
+    100% 4px,
+    3px 100%,
+    100% 100%;
+  animation: flicker 0.1s infinite;
+  z-index: 9999;
 }
+
+@keyframes flicker {
+  0% {
+    opacity: 0.97;
+  }
+  5% {
+    opacity: 0.98;
+  }
+  10% {
+    opacity: 0.99;
+  }
+  15% {
+    opacity: 0.98;
+  }
+  20% {
+    opacity: 0.99;
+  }
+  25% {
+    opacity: 0.98;
+  }
+  30% {
+    opacity: 1;
+  }
+  35% {
+    opacity: 0.98;
+  }
+  40% {
+    opacity: 0.99;
+  }
+  45% {
+    opacity: 0.98;
+  }
+  50% {
+    opacity: 0.99;
+  }
+  55% {
+    opacity: 0.98;
+  }
+  60% {
+    opacity: 0.99;
+  }
+  65% {
+    opacity: 0.98;
+  }
+  70% {
+    opacity: 0.99;
+  }
+  75% {
+    opacity: 0.98;
+  }
+  80% {
+    opacity: 0.99;
+  }
+  85% {
+    opacity: 0.98;
+  }
+  90% {
+    opacity: 0.99;
+  }
+  95% {
+    opacity: 0.98;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Scanline removed as per request - handled by crt-overlay gradient */
 
 .scanline {
   width: 100%;
@@ -57,9 +140,15 @@
 }
 
 @keyframes scanline {
-  0% { bottom: 100%; }
-  80% { bottom: 100%; }
-  100% { bottom: 0%; }
+  0% {
+    bottom: 100%;
+  }
+  80% {
+    bottom: 100%;
+  }
+  100% {
+    bottom: 0%;
+  }
 }
 
 /* Custom scrollbar */
@@ -92,6 +181,11 @@
 }
 
 @keyframes blink {
-  from, to { opacity: 1; }
-  50% { opacity: 0; }
+  from,
+  to {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }

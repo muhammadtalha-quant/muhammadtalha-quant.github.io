@@ -27,12 +27,12 @@ export const Input: React.FC<InputProps> = ({
 
   return (
     <div className="flex gap-2 items-center relative py-1">
-      <span className="text-accent-amber font-bold shrink-0">
+      <span className="text-accent-amber font-bold shrink-0" aria-hidden="true">
         {promptUser}@{promptHost}:~$
       </span>
       <div className="relative flex-1 flex items-center">
         <span className="text-text-primary whitespace-pre">{value}</span>
-        <span className="cursor-block" />
+        <span className="cursor-block" aria-hidden="true" />
         <input
           ref={inputRef}
           type="text"
@@ -40,9 +40,10 @@ export const Input: React.FC<InputProps> = ({
           value={value}
           onChange={onChange}
           onKeyDown={onKeyDown}
-          autoComplete="off"
           autoFocus
-          spellCheck="false"
+          spellCheck={false}
+          autoComplete="off"
+          aria-label="Terminal input"
         />
       </div>
     </div>

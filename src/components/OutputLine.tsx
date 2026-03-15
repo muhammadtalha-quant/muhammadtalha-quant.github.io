@@ -1,6 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { OutputEntry } from '../types'
+import { profile } from '../data/profile'
 
 interface OutputLineProps {
   entry: OutputEntry
@@ -16,7 +17,9 @@ export const OutputLine: React.FC<OutputLineProps> = React.memo(({ entry }) => {
     >
       {entry.type === 'input' ? (
         <div className="flex gap-2">
-          <span className="text-accent-amber font-bold">muhammadtalha@quant:~$</span>
+          <span className="text-accent-amber font-bold">
+            {profile.promptUser}@{profile.promptHost}:~$
+          </span>
           <span className="text-text-primary">{entry.content}</span>
         </div>
       ) : (

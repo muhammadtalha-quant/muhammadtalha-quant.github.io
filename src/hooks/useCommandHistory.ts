@@ -4,17 +4,20 @@ export const useCommandHistory = (maxHistory = 100) => {
   const [history, setHistory] = useState<string[]>([])
   const [index, setIndex] = useState(-1)
 
-  const addToHistory = useCallback((command: string) => {
-    if (!command.trim()) return
-    setHistory((prev) => {
-      const newHistory = [command, ...prev.filter((c) => c !== command)].slice(
-        0,
-        maxHistory
-      )
-      return newHistory
-    })
-    setIndex(-1)
-  }, [maxHistory])
+  const addToHistory = useCallback(
+    (command: string) => {
+      if (!command.trim()) return
+      setHistory((prev) => {
+        const newHistory = [
+          command,
+          ...prev.filter((c) => c !== command),
+        ].slice(0, maxHistory)
+        return newHistory
+      })
+      setIndex(-1)
+    },
+    [maxHistory]
+  )
 
   const getPrevious = useCallback(() => {
     if (history.length === 0) return null

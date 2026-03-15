@@ -12,5 +12,6 @@ export const profile: Profile = {
   github: 'https://github.com/muhammadtalha-quant',
   linkedin: 'https://linkedin.com/in/muhammadtalha-quant',
   siteUrl: 'https://muhammadtalha-quant.github.io',
-  resumeUrl: 'https://raw.githubusercontent.com/muhammadtalha-quant/muhammadtalha-quant/main/resume.pdf',
+  resumeUrl:
+    'https://raw.githubusercontent.com/muhammadtalha-quant/muhammadtalha-quant/master/resume.pdf',
 }

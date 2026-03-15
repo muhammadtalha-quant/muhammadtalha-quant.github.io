@@ -1,12 +1,11 @@
-import React from 'react'
-import { Command } from '../types'
+import type { Command } from '../types'
 import { WhoAmI } from './handlers/whoami'
 import { Bio } from './handlers/bio'
 import { Nitch } from './handlers/nitch'
 import { ProjectsHandler } from './handlers/projects'
 import { Skills } from './handlers/skills'
 import { ContactsHandler } from './handlers/contacts'
-import { Help, Reboot, Wget } from './handlers/system'
+import { Help, Reboot, GetCV, Shutdown } from './handlers/system'
 
 export const createCommandRegistry = (clearHistory: () => void): Command[] => {
   const registry: Command[] = [
@@ -39,46 +38,11 @@ export const createCommandRegistry = (clearHistory: () => void): Command[] => {
       handler: () => <ProjectsHandler />,
     },
     {
-      name: 'projects:done',
-      aliases: [],
-      description: 'Completed projects only',
-      category: 'work',
-      handler: () => <ProjectsHandler filter="done" />,
-    },
-    {
-      name: 'projects:planned',
-      aliases: [],
-      description: 'Planned projects only',
-      category: 'work',
-      handler: () => <ProjectsHandler filter="planned" />,
-    },
-    {
       name: 'skills',
       aliases: [],
       description: 'Full technical skill matrix',
       category: 'work',
       handler: () => <Skills />,
-    },
-    {
-      name: 'skills:cpp',
-      aliases: [],
-      description: 'C++ systems skills only',
-      category: 'work',
-      handler: () => <Skills category="cpp" />,
-    },
-    {
-      name: 'skills:python',
-      aliases: [],
-      description: 'Python research skills only',
-      category: 'work',
-      handler: () => <Skills category="python" />,
-    },
-    {
-      name: 'skills:math',
-      aliases: [],
-      description: 'Mathematical foundations only',
-      category: 'work',
-      handler: () => <Skills category="math" />,
     },
     {
       name: 'linkedin',
@@ -95,25 +59,11 @@ export const createCommandRegistry = (clearHistory: () => void): Command[] => {
       handler: () => <ContactsHandler type="gh" />,
     },
     {
-      name: 'mail',
-      aliases: [],
-      description: 'Display email address',
-      category: 'contact',
-      handler: () => <ContactsHandler type="mail" />,
-    },
-    {
       name: 'mailto',
       aliases: [],
       description: 'Open mail client',
       category: 'contact',
       handler: () => <ContactsHandler type="mailto" />,
-    },
-    {
-      name: 'help',
-      aliases: [],
-      description: 'Show this command list',
-      category: 'system',
-      handler: () => <Help registry={registry} />,
     },
     {
       name: 'clear',
@@ -124,24 +74,40 @@ export const createCommandRegistry = (clearHistory: () => void): Command[] => {
         clearHistory()
         return (
           <div className="my-2">
-            <p className="text-text-primary">Terminal cleared. Type 'help' to see available commands.</p>
+            <p className="text-text-primary">
+              Terminal cleared. Type 'help' to see available commands.
+            </p>
           </div>
         )
       },
     },
     {
+      name: 'help',
+      aliases: [],
+      description: 'Show this command list',
+      category: 'system',
+      handler: () => <Help registry={registry} />,
+    },
+    {
+      name: 'get-cv',
+      aliases: [],
+      description: 'Download resume PDF',
+      category: 'system',
+      handler: () => <GetCV />,
+    },
+    {
       name: 'reboot',
       aliases: [],
-      description: 'Hard reload the entire page',
+      description: 'Restart the terminal session',
       category: 'system',
       handler: () => <Reboot />,
     },
     {
-      name: 'wget',
+      name: 'shutdown',
       aliases: [],
-      description: 'Download resume PDF',
+      description: 'Shut down the terminal',
       category: 'system',
-      handler: (args) => <Wget args={args} />,
+      handler: () => <Shutdown />,
     },
   ]
 

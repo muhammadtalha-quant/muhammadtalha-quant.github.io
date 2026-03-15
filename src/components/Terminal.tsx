@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react'
+import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useTerminal } from '../hooks/useTerminal'
 import { useCommandHistory } from '../hooks/useCommandHistory'
@@ -10,45 +10,100 @@ import { Input } from './Input'
 import { profile } from '../data/profile'
 
 export const Terminal: React.FC = () => {
-  const [bootPhase, setBootPhase] = useState<'booting' | 'banner' | 'ready'>('booting')
+  const [bootPhase, setBootPhase] = useState<'booting' | 'banner' | 'ready'>(
+    'booting'
+  )
   const [inputValue, setInputValue] = useState('')
-  const { history, addEntry, clearHistory, terminalEndRef } = useTerminal()
+  const { history, addEntry, clearHistory, terminalEndRef, containerRef } =
+    useTerminal()
+  const [isScrolledUp, setIsScrolledUp] = useState(false)
+  const [scrollPercent, setScrollPercent] = useState(100)
 
-  const commandRegistry = useMemo(() => createCommandRegistry(clearHistory), [clearHistory])
-  const commandNames = useMemo(() => commandRegistry.map(c => c.name), [commandRegistry])
+  const commandRegistry = useMemo(
+    () => createCommandRegistry(clearHistory),
+    [clearHistory]
+  )
+  const commandNames = useMemo(
+    () => commandRegistry.map((c) => c.name),
+    [commandRegistry]
+  )
 
   const { addToHistory, getPrevious, getNext, resetIndex } = useCommandHistory()
   const { complete } = useTabCompletion(commandNames)
 
-  const handleCommand = useCallback(async (input: string) => {
-    const trimmedInput = input.trim()
-    if (!trimmedInput) {
-      addEntry({ type: 'input', content: '' })
-      return
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+    const handleScroll = () => {
+      const atBottom =
+        container.scrollHeight - container.scrollTop <=
+        container.clientHeight + 50
+      setIsScrolledUp(!atBottom)
+
+      const totalScrollable = container.scrollHeight - container.clientHeight
+      const currentScroll = container.scrollTop
+      const percent =
+        totalScrollable > 0 ? (currentScroll / totalScrollable) * 100 : 100
+      setScrollPercent(Math.round(percent))
     }
+    container.addEventListener('scroll', handleScroll, { passive: true })
+    return () => container.removeEventListener('scroll', handleScroll)
+  }, [containerRef])
 
-    addToHistory(trimmedInput)
-    addEntry({ type: 'input', content: trimmedInput })
-
-    const [cmdName, ...args] = trimmedInput.split(' ')
-    const command = commandRegistry.find(c => c.name === cmdName.toLowerCase())
-
-    if (command) {
-      const output = await command.handler(args)
-      if (cmdName.toLowerCase() !== 'clear') {
-        addEntry({ type: 'output', content: output })
+  useEffect(() => {
+    const handleGlobalScroll = (e: KeyboardEvent) => {
+      if (e.key === 'PageUp' || e.key === 'PageDown') {
+        const container = containerRef.current
+        if (!container) return
+        e.preventDefault()
+        const direction = e.key === 'PageUp' ? -1 : 1
+        container.scrollBy({
+          top: direction * container.clientHeight * 0.8,
+          behavior: 'smooth',
+        })
       }
-    } else {
-      addEntry({
-        type: 'error',
-        content: (
-          <div className="text-accent-red">
-            bash: {cmdName}: command not found. Type 'help' to see available commands.
-          </div>
-        )
-      })
     }
-  }, [addEntry, addToHistory, commandRegistry])
+    window.addEventListener('keydown', handleGlobalScroll)
+    return () => window.removeEventListener('keydown', handleGlobalScroll)
+  }, [containerRef])
+
+  const handleCommand = useCallback(
+    async (input: string) => {
+      const trimmedInput = input.trim()
+      if (!trimmedInput) {
+        addEntry({ type: 'input', content: '' })
+        return
+      }
+
+      addToHistory(trimmedInput)
+      addEntry({ type: 'input', content: trimmedInput })
+
+      const [cmdName, ...args] = trimmedInput.split(' ')
+      const command = commandRegistry.find(
+        (c) => c.name === cmdName.toLowerCase()
+      )
+
+      if (command) {
+        const output = await command.handler(args)
+        addEntry({ type: 'output', content: output })
+        // The clear command is handled directly by the command registry now,
+        // so this specific check for 'clear' is no longer needed here.
+        // The `createCommandRegistry` function now takes `clearHistory` and
+        // the 'clear' command handler will call it directly.
+      } else {
+        addEntry({
+          type: 'error',
+          content: (
+            <div className="text-accent-red">
+              bash: {cmdName}: command not found. Type 'help' to see available
+              commands.
+            </div>
+          ),
+        })
+      }
+    },
+    [addEntry, addToHistory, commandRegistry]
+  )
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -68,7 +123,7 @@ export const Terminal: React.FC = () => {
       if (completion) setInputValue(completion)
     } else if (e.ctrlKey && e.key === 'l') {
       e.preventDefault()
-      handleCommand('clear')
+      clearHistory() // Directly call clearHistory
     } else if (e.ctrlKey && e.key === 'c') {
       e.preventDefault()
       addEntry({ type: 'input', content: inputValue + '^C' })
@@ -87,8 +142,7 @@ export const Terminal: React.FC = () => {
   const banner = (
     <div className="my-4">
       <pre className="text-[10px] leading-tight text-text-primary overflow-x-auto whitespace-pre select-none">
-        {
-          ` ███╗   ███╗██╗   ██╗██╗  ██╗ █████╗ ███╗   ███╗███╗   ███╗ █████╗ ██████╗     ████████╗ █████╗ ██╗     ██╗  ██╗ █████╗ 
+        {` ███╗   ███╗██╗   ██╗██╗  ██╗ █████╗ ███╗   ███╗███╗   ███╗ █████╗ ██████╗     ████████╗ █████╗ ██╗     ██╗  ██╗ █████╗ 
  ████╗ ████║██║   ██║██║  ██║██╔══██╗████╗ ████║████╗ ████║██╔══██╗██╔══██╗    ╚══██╔══╝██╔══██╗██║     ██║  ██║██╔══██╗
  ██╔████╔██║██║   ██║███████║███████║██╔████╔██║██╔████╔██║███████║██║  ██║       ██║   ███████║██║     ███████║███████║
  ██║╚██╔╝██║██║   ██║██╔══██║██╔══██║██║╚██╔╝██║██║╚██╔╝██║██╔══██║██║  ██║       ██║   ██╔══██║██║     ██╔══██║██╔══██║
@@ -96,17 +150,25 @@ export const Terminal: React.FC = () => {
  ╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝     ╚═╝╚═╝  ╚═╝╚═════╝        ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝`}
       </pre>
       <div className="mt-4 text-text-secondary">
-        <div className="text-lg text-text-primary">Algorithm Developer · Quantitative Researcher</div>
-        <div className="text-text-dim mt-1">────────────────────────────────────────────</div>
+        <div className="text-lg text-text-primary">
+          Algorithm Developer · Quantitative Researcher
+        </div>
+        <div className="text-text-dim mt-1">
+          ────────────────────────────────────────────
+        </div>
         <div className="mt-2">Type 'help' to see available commands.</div>
       </div>
     </div>
   )
 
   return (
-    <div className="min-h-screen bg-bg-primary p-4 md:p-8 relative overflow-y-auto selection:bg-accent-amber selection:text-bg-primary">
-      <div className="crt-overlay" />
-      <div className="scanline" />
+    <div
+      ref={containerRef}
+      className="h-screen bg-bg-primary p-4 md:p-8 relative overflow-y-auto selection:bg-accent-amber selection:text-bg-primary"
+      role="application"
+      aria-label="Interactive terminal — type help for commands"
+    >
+      <div className="pointer-events-none fixed inset-0 z-10 crt-overlay" />
 
       <div className="max-w-5xl mx-auto relative z-10">
         <BootSequence onComplete={handleBootComplete} />
@@ -141,9 +203,35 @@ export const Terminal: React.FC = () => {
         <div ref={terminalEndRef} />
       </div>
 
-      {/* Mobile-only banner */}
-      <div className="fixed top-0 left-0 right-0 bg-accent-amber text-bg-primary text-center text-[10px] md:hidden py-1 z-50 font-bold uppercase tracking-tighter">
-        Best experienced on desktop
+      {isScrolledUp && (
+        <div className="fixed bottom-6 right-6 z-20 flex flex-col items-end gap-2">
+          <div className="text-text-dim text-[10px] font-mono opacity-50">
+            [SCROLL_POS: {scrollPercent}%]
+          </div>
+          <div
+            className="text-text-dim text-xs cursor-pointer hover:text-text-secondary transition-colors flex items-center gap-2"
+            onClick={() =>
+              terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+            }
+          >
+            <span>↓ scroll to bottom</span>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile blocking overlay */}
+      <div className="fixed inset-0 z-50 bg-bg-primary flex flex-col items-center justify-center p-8 md:hidden">
+        <div className="text-accent-amber text-4xl mb-6 select-none">⚠</div>
+        <div className="text-text-primary text-xl font-bold text-center mb-4">
+          Desktop Required
+        </div>
+        <div className="text-text-secondary text-sm text-center leading-relaxed max-w-xs">
+          This portfolio is a terminal emulator and is best experienced on a
+          desktop or laptop computer.
+        </div>
+        <div className="mt-8 text-text-dim text-xs text-center">
+          {profile.promptUser}@{profile.promptHost}:~$
+        </div>
       </div>
     </div>
   )

@@ -4,6 +4,7 @@ import { OutputEntry } from '../types'
 export const useTerminal = () => {
   const [history, setHistory] = useState<OutputEntry[]>([])
   const terminalEndRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = useCallback(() => {
     terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -13,14 +14,22 @@ export const useTerminal = () => {
     scrollToBottom()
   }, [history, scrollToBottom])
 
-  const addEntry = useCallback((entry: Omit<OutputEntry, 'id' | 'timestamp'>) => {
-    const newEntry: OutputEntry = {
-      ...entry,
-      id: Math.random().toString(36).substring(2, 9),
-      timestamp: new Date(),
-    }
-    setHistory((prev) => [...prev, newEntry])
-  }, [])
+  const addEntry = useCallback(
+    (entry: Omit<OutputEntry, 'id' | 'timestamp'>) => {
+      const newEntry: OutputEntry = {
+        ...entry,
+        id: crypto.randomUUID(),
+        timestamp: new Date(),
+      }
+      setHistory((prev) => {
+        const updated = [...prev, newEntry]
+        return updated.length > 500
+          ? updated.slice(updated.length - 500)
+          : updated
+      })
+    },
+    []
+  )
 
   const clearHistory = useCallback(() => {
     setHistory([])
@@ -31,6 +40,7 @@ export const useTerminal = () => {
     addEntry,
     clearHistory,
     terminalEndRef,
+    containerRef,
     scrollToBottom,
   }
 }

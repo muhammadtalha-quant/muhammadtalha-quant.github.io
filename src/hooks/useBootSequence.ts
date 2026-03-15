@@ -16,7 +16,7 @@ export const useBootSequence = (onComplete: () => void) => {
 
   useEffect(() => {
     let currentLine = 0
-    const timeouts: NodeJS.Timeout[] = []
+    const timeouts: number[] = []
 
     const addLine = () => {
       if (currentLine < BOOT_LINES.length) {
@@ -25,10 +25,12 @@ export const useBootSequence = (onComplete: () => void) => {
         const delay = Math.floor(Math.random() * (100 - 60 + 1) + 60)
         timeouts.push(setTimeout(addLine, delay))
       } else {
-        timeouts.push(setTimeout(() => {
-          setIsComplete(true)
-          onComplete()
-        }, 400))
+        timeouts.push(
+          setTimeout(() => {
+            setIsComplete(true)
+            onComplete()
+          }, 400)
+        )
       }
     }
 

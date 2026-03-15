@@ -1,5 +1,4 @@
 import React from 'react'
-import { motion } from 'framer-motion'
 import { useBootSequence } from '../hooks/useBootSequence'
 
 interface BootSequenceProps {

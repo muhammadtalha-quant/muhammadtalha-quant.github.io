@@ -1,55 +1,99 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { profile } from '../../data/profile'
+import { useTypingLines } from '../../hooks/useTypingLines'
 
 export const Nitch: React.FC = () => {
+  const uptime = useMemo(() => {
+    const birth = new Date(2006, 0, 21)
+    const now = new Date()
+
+    let years = now.getFullYear() - birth.getFullYear()
+    let months = now.getMonth() - birth.getMonth()
+    let days = now.getDate() - birth.getDate()
+
+    if (days < 0) {
+      months--
+      days += new Date(now.getFullYear(), now.getMonth(), 0).getDate()
+    }
+    if (months < 0) {
+      years--
+      months += 12
+    }
+
+    return `${years}y ${months}m ${days}d`
+  }, [])
+
+  const rows = [
+    { label: 'OS', value: 'Linux (Arch/Quant Edition)' },
+    { label: 'Age', value: `${profile.age} years` },
+    { label: 'Uptime', value: uptime },
+    { label: 'Shell', value: 'zsh 5.9' },
+    { label: 'Resolution', value: 'Fluid Terminal Interface' },
+    { label: 'WM/DE', value: 'Custom CRT Engine' },
+  ]
+
+  const { visibleCount } = useTypingLines(
+    rows.map((r) => r.label),
+    50
+  )
+
   return (
-    <div className="my-4 flex flex-col md:flex-row gap-8">
-      <div className="text-accent-amber font-bold">
-        <pre className="text-[14px] leading-tight">
-{`        ██████╗
-       ██╔═══██╗
-       ██║   ██║
-       ██║▄▄ ██║
-       ╚██████╔╝
-        ╚══▀▀═╝`}
+    <div className="my-4 font-terminal flex flex-col md:flex-row gap-8">
+      <div className="text-accent-amber select-none hidden md:block leading-none">
+        <pre className="text-[12px] whitespace-pre overflow-x-visible">
+          {`███╗   ███╗████████╗
+████╗ ████║╚══██╔══╝
+██╔████╔██║   ██║   
+██║╚██╔╝██║   ██║   
+██║ ╚═╝ ██║   ██║   
+╚═╝     ╚═╝   ╚═╝   `}
         </pre>
       </div>
-      <div>
-        <div className="flex gap-2 items-center mb-1">
-          <span className="text-accent-amber font-bold">{profile.promptUser}@{profile.promptHost}</span>
+
+      <div className="flex-1">
+        <div className="text-accent-green font-bold text-lg mb-2 flex items-center gap-2">
+          {profile.promptUser}@{profile.promptHost}
         </div>
-        <div className="text-text-dim mb-2">───────────────────────────────</div>
-        <div className="grid grid-cols-[100px_1fr] gap-x-4 gap-y-1">
-          <span className="text-text-secondary">◆ Age</span>
-          <span className="text-text-primary">: {profile.age}</span>
-          
-          <span className="text-text-secondary">◆ Location</span>
-          <span className="text-text-primary">: {profile.location}</span>
-          
-          <span className="text-text-secondary">◆ Degree</span>
-          <span className="text-text-primary">: {profile.degree}</span>
-          
-          <span className="text-text-secondary">◆ Stack</span>
-          <span className="text-text-primary">: C++20 + Python 3.11</span>
-          
-          <span className="text-text-secondary">◆ Focus</span>
-          <span className="text-text-primary">: Algo Dev & Quant Research</span>
-          
-          <span className="text-text-secondary">◆ Systems</span>
-          <span className="text-text-primary">: C++ — engines, data structures</span>
-          
-          <span className="text-text-secondary">◆ Research</span>
-          <span className="text-text-primary">: Python — signals, ML, risk</span>
-          
-          <span className="text-text-secondary">◆ Math</span>
-          <span className="text-text-primary">: Stochastic calc, statistics, linear algebra, probability</span>
-          
-          <span className="text-text-secondary">◆ Targets</span>
-          <span className="text-text-primary">: {profile.targets.join(' · ')}</span>
-          
-          <span className="text-text-secondary">◆ Building</span>
-          <span className="text-text-primary">: See 'projects'</span>
+        <div className="text-text-dim mb-2">──────────────────────────────</div>
+        <div className="space-y-1">
+          {rows.slice(0, visibleCount).map((row, i) => (
+            <div key={i} className="flex gap-4">
+              <span className="text-accent-amber font-bold w-24 shrink-0">
+                {row.label}
+              </span>
+              <span className="text-text-primary">{row.value}</span>
+            </div>
+          ))}
         </div>
+
+        {visibleCount === rows.length && (
+          <div className="mt-4 grid grid-cols-1 gap-1">
+            <div className="flex gap-4">
+              <span className="text-accent-amber font-bold w-24 shrink-0">
+                C++
+              </span>
+              <span className="text-text-primary">
+                Systems, HFT engines, Optimizers
+              </span>
+            </div>
+            <div className="flex gap-4">
+              <span className="text-accent-amber font-bold w-24 shrink-0">
+                Python
+              </span>
+              <span className="text-text-primary">
+                ML research, signals, risk models
+              </span>
+            </div>
+            <div className="flex gap-4">
+              <span className="text-accent-amber font-bold w-24 shrink-0">
+                Targets
+              </span>
+              <span className="text-text-primary">
+                {profile.targets.join(' · ')}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

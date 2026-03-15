@@ -1,68 +1,119 @@
-import React from 'react'
-import { projects } from '../../data/projects'
+import React, { useEffect, useState } from 'react'
+import { profile } from '../../data/profile'
+import { useTypingLines } from '../../hooks/useTypingLines'
 
-interface ProjectsProps {
-  filter?: 'done' | 'planned' | 'in-progress'
+interface GitHubRepo {
+  id: number
+  name: string
+  description: string | null
+  html_url: string
+  language: string | null
+  stargazers_count: number
+  forks_count: number
+  updated_at: string
 }
 
-export const ProjectsHandler: React.FC<ProjectsProps> = ({ filter }) => {
-  const filteredProjects = filter ? projects.filter((p) => p.status === filter) : projects
+export const ProjectsHandler: React.FC = () => {
+  const [repos, setRepos] = useState<GitHubRepo[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  if (filteredProjects.length === 0 && filter === 'done') {
+  useEffect(() => {
+    const fetchRepos = async () => {
+      try {
+        const username = profile.github.split('/').pop()
+        const response = await fetch(
+          `https://api.github.com/users/${username}/repos?sort=updated`
+        )
+        if (!response.ok) throw new Error('Failed to fetch repositories')
+        const data: GitHubRepo[] = await response.json()
+
+        // Filter: C++ or Python as primary language
+        const filtered = data.filter((repo) =>
+          ['C++', 'Python'].includes(repo.language || '')
+        )
+
+        setRepos(filtered)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchRepos()
+  }, [])
+
+  const { visibleCount } = useTypingLines(
+    repos.map((r) => r.name),
+    100
+  )
+
+  if (loading)
     return (
-      <div className="my-2 text-text-primary">
-        <p>No completed projects yet.</p>
-        <p className="text-text-secondary">Type 'projects:planned' to see what is in the pipeline.</p>
-        <p className="text-text-secondary">Type 'projects' to see all including in-progress work.</p>
+      <div className="text-text-dim italic my-4 px-2">
+        Fetching projects from GitHub...
       </div>
     )
-  }
+
+  if (error)
+    return (
+      <div className="text-accent-red my-4 px-2">
+        Error: {error}. Please check connectivity or GitHub username.
+      </div>
+    )
+
+  if (repos.length === 0)
+    return (
+      <div className="text-text-dim italic my-4 px-2">
+        No C++ or Python projects found on GitHub profile.
+      </div>
+    )
 
   return (
-    <div className="my-4 space-y-6">
-      {filteredProjects.map((project) => (
-        <div key={project.id} className="group">
-          <div className="flex items-center gap-3">
-            <span className={`text-[12px] px-1.5 py-0.5 rounded-sm font-bold uppercase ${
-              project.status === 'done' ? 'bg-accent-green text-bg-primary' :
-              project.status === 'in-progress' ? 'bg-accent-amber text-bg-primary' :
-              'bg-accent-blue text-bg-primary'
-            }`}>
-              {project.status.replace('-', ' ')}
+    <div className="my-4 space-y-8 px-2">
+      {repos.slice(0, visibleCount).map((repo) => (
+        <div key={repo.id} className="max-w-3xl font-terminal">
+          <div className="flex items-center gap-3 mb-2">
+            <span className="text-accent-green font-bold text-lg">
+              {repo.name}
             </span>
-            <span className="text-accent-amber font-bold text-lg">{project.name}</span>
+            <span className="text-[10px] px-2 py-0.5 rounded font-bold uppercase bg-accent-blue/10 text-accent-blue border border-accent-blue/20">
+              {repo.language}
+            </span>
           </div>
-          <div className="text-text-dim mt-1">─────────────────────────────────────────────────────────</div>
-          <div className="mt-2 space-y-1">
-            <div className="flex">
-              <span className="text-text-secondary w-28 shrink-0">Description</span>
-              <div className="text-text-primary">
-                {project.description.map((line, i) => (
-                  <p key={i}>{line}</p>
-                ))}
-              </div>
+
+          <div className="mb-3">
+            <p className="text-text-primary leading-relaxed">
+              {repo.description || 'No description provided.'}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-[100px_1fr] gap-x-4 text-sm">
+            <div className="text-text-secondary">Stats</div>
+            <div className="text-text-primary">
+              ⭐ {repo.stargazers_count} | 🍴 {repo.forks_count}
             </div>
-            <div className="flex">
-              <span className="text-text-secondary w-28 shrink-0">Language</span>
-              <span className="text-text-primary">
-                {project.language.mode === 'cpp-only' ? 'C++ only' :
-                 project.language.mode === 'python-only' ? 'Python only' :
-                 `C++ ${project.language.cppPercent}% | Python ${project.language.pythonPercent}%`}
-                {project.language.reason && ` — ${project.language.reason}`}
-              </span>
-            </div>
-            <div className="flex">
-              <span className="text-text-secondary w-28 shrink-0">Repo</span>
-              <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" className="text-accent-purple hover:underline">
-                {project.repoUrl}
+
+            <div className="text-text-secondary">Repository</div>
+            <div>
+              <a
+                href={repo.html_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-accent-purple hover:underline break-all"
+              >
+                {repo.html_url.replace('https://github.com/', 'gh://')}
               </a>
             </div>
-            {project.note && (
-              <div className="flex italic text-text-dim mt-2">
-                <span className="w-28 shrink-0">Note</span>
-                <span>{project.note}</span>
-              </div>
-            )}
+
+            <div className="text-text-secondary">Updated</div>
+            <div className="text-text-dim">
+              {new Date(repo.updated_at).toLocaleDateString(undefined, {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+              })}
+            </div>
           </div>
         </div>
       ))}

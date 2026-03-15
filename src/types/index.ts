@@ -15,23 +15,6 @@ export interface OutputEntry {
   timestamp: Date
 }
 
-export interface Project {
-  id: string
-  name: string
-  description: string[]
-  language: LanguageSplit
-  repoUrl: string
-  status: 'done' | 'planned' | 'in-progress'
-  note?: string
-}
-
-export interface LanguageSplit {
-  mode: 'cpp-only' | 'python-only' | 'mixed'
-  cppPercent?: number
-  pythonPercent?: number
-  reason?: string
-}
-
 export interface SkillCategory {
   name: string
   items: SkillItem[]

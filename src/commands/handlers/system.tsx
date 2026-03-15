@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react'
-import { Command } from '../../types'
+import React, { useEffect, useState, useRef } from 'react'
+import ReactDOM from 'react-dom'
+import type { Command } from '../../types'
 import { profile } from '../../data/profile'
 
 export const Help: React.FC<{ registry: Command[] }> = ({ registry }) => {
@@ -10,19 +11,23 @@ export const Help: React.FC<{ registry: Command[] }> = ({ registry }) => {
     system: [],
   }
 
-  registry.forEach((cmd) => categories[cmd.category].push(cmd))
+  registry
+    .filter((cmd) => cmd.name !== 'mail')
+    .forEach((cmd) => categories[cmd.category].push(cmd))
 
   return (
-    <div className="my-4 space-y-4 max-w-2xl">
-      {Object.entries(categories).map(([cat, cmds]) => (
-        <div key={cat}>
-          <div className="text-text-dim uppercase text-[12px] font-bold tracking-widest mb-1">{cat}</div>
-          <div className="space-y-1">
+    <div className="my-4 space-y-4">
+      {Object.entries(categories).map(([category, cmds]) => (
+        <div key={category}>
+          <div className="text-text-dim uppercase text-[11px] font-bold tracking-widest mb-2 mt-4 first:mt-0">
+            {category}
+          </div>
+          <div className="grid grid-cols-[140px_1fr] gap-4">
             {cmds.map((cmd) => (
-              <div key={cmd.name} className="grid grid-cols-[120px_1fr] gap-4">
-                <span className="text-accent-amber font-bold">{cmd.name}</span>
-                <span className="text-text-secondary">{cmd.description}</span>
-              </div>
+              <React.Fragment key={cmd.name}>
+                <div className="text-accent-amber font-bold">{cmd.name}</div>
+                <div className="text-text-secondary">{cmd.description}</div>
+              </React.Fragment>
             ))}
           </div>
         </div>
@@ -36,9 +41,9 @@ export const Reboot: React.FC = () => {
 
   useEffect(() => {
     const sequence = [
-      { text: '[    0.000000] Flushing session data...', delay: 400 },
-      { text: '[    0.041000] Unmounting modules...', delay: 800 },
-      { text: '[    0.082000] Initiating hard reload.', delay: 1200 },
+      { text: '[    0.000000] Flushing session data...', delay: 300 },
+      { text: '[    0.041000] Unmounting modules...', delay: 600 },
+      { text: '[    0.082000] Initiating hard reload.', delay: 900 },
     ]
 
     sequence.forEach((item) => {
@@ -47,9 +52,11 @@ export const Reboot: React.FC = () => {
       }, item.delay)
     })
 
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       window.location.reload()
-    }, 2400)
+    }, 1400) // Total delay for all lines + a bit more
+
+    return () => clearTimeout(timer)
   }, [])
 
   return (
@@ -61,57 +68,106 @@ export const Reboot: React.FC = () => {
   )
 }
 
-export const Wget: React.FC<{ args: string[] }> = ({ args }) => {
-  const [output, setOutput] = useState<string[]>([])
-  const [isError, setIsError] = useState(false)
+export const GetCV: React.FC = () => {
+  const [output, setOutput] = useState<string[]>(['Connecting to host...'])
+  const hasRun = useRef(false)
 
   useEffect(() => {
-    if (args[0] !== 'myresume.pdf') {
-      setOutput([`wget: cannot retrieve '${args[0]}': 404 Not Found`, 'Resume not yet available. Check back soon.'])
-      setIsError(true)
-      return
-    }
+    if (hasRun.current) return
+    hasRun.current = true
 
-    const steps = [
-      { text: '--2026-04-01 09:14:22--', delay: 80 },
-      { text: '  https://muhammadtalha-quant.dev/myresume.pdf', delay: 160 },
-      { text: 'Resolving muhammadtalha-quant.dev... 104.21.14.82', delay: 240 },
-      { text: 'Connecting to muhammadtalha-quant.dev:443... connected.', delay: 320 },
+    // No parameters required anymore.
+
+    const sequence = [
       { text: 'HTTP request sent, awaiting response... 200 OK', delay: 400 },
-      { text: 'Length: 152871 (149K) [application/pdf]', delay: 480 },
-      { text: "Saving to: 'myresume.pdf'", delay: 560 },
-      { text: '', delay: 600 },
-      { text: 'myresume.pdf    100%[===================>]  149.29K  2.14MB/s  in 0.07s', delay: 700 },
-      { text: '', delay: 750 },
-      { text: "2026-04-01 09:14:23 (2.14 MB/s) — 'myresume.pdf' saved [152871/152871]", delay: 850 },
+      { text: 'Length: 1.2MB [application/pdf]', delay: 800 },
+      { text: 'Saving to: ‘myresume.pdf’', delay: 1200 },
     ]
 
-    steps.forEach((step) => {
+    sequence.forEach((item) => {
       setTimeout(() => {
-        setOutput((prev) => [...prev, step.text])
-      }, step.delay)
+        setOutput((prev) => [...prev, item.text])
+      }, item.delay)
     })
 
     setTimeout(() => {
-      try {
-        const a = document.createElement('a')
-        a.href = profile.resumeUrl
-        a.download = 'myresume.pdf'
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-      } catch {
-        setOutput((prev) => [...prev, "wget: failed to trigger download."])
-        setIsError(true)
-      }
-    }, 1000)
-  }, [args])
+      const link = document.createElement('a')
+      link.href = profile.resumeUrl
+      link.download = 'Muhammad_Talha_Resume.pdf'
+      link.target = '_blank'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      setOutput((prev) => [...prev, 'Download started successfully.'])
+    }, 1600)
+  }, [])
 
   return (
-    <div className={`my-2 ${isError ? 'text-accent-red' : 'text-text-primary'}`}>
+    <div className="my-2 text-text-primary">
       {output.map((line, i) => (
-        <div key={i} className="min-h-[1.6em]">{line}</div>
+        <div key={i} className="min-h-[1.6em]">
+          {line}
+        </div>
       ))}
     </div>
+  )
+}
+
+export const Shutdown: React.FC = () => {
+  const [lines, setLines] = useState<string[]>([])
+  const [crashed, setCrashed] = useState(false)
+
+  useEffect(() => {
+    const sequence = [
+      { text: 'Shutting down...', delay: 0 },
+      { text: '[    0.000000] Stopping all processes...', delay: 80 },
+      { text: '[    0.041000] Unmounting file systems...', delay: 160 },
+      { text: '[    0.082000] Flushing disk buffers...', delay: 240 },
+      { text: '[    0.120000] Kernel panic — not syncing.', delay: 320 },
+      { text: '[    0.161000] Segmentation fault (core dumped)', delay: 400 },
+    ]
+
+    sequence.forEach(({ text, delay }) => {
+      setTimeout(() => setLines((prev) => [...prev, text]), delay)
+    })
+
+    setTimeout(() => setCrashed(true), 1200)
+  }, [])
+
+  const crashOverlay = crashed
+    ? ReactDOM.createPortal(
+        <div className="fixed inset-0 z-[9999] bg-bg-primary flex items-center justify-center">
+          <div className="text-center max-w-md px-8">
+            <div className="text-accent-red text-6xl mb-6 select-none">◉</div>
+            <div className="text-text-primary text-3xl font-bold mb-4">
+              Aw, Snap!
+            </div>
+            <p className="text-text-secondary mb-2">
+              Something went wrong while running this terminal.
+            </p>
+            <p className="text-text-dim text-sm font-terminal mb-8">
+              Error code: SIGKILL_BY_USER
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="border border-border bg-bg-secondary text-accent-amber px-6 py-2 hover:bg-bg-tertiary transition-colors cursor-pointer font-terminal text-sm"
+            >
+              [ Start ]
+            </button>
+          </div>
+        </div>,
+        document.body
+      )
+    : null
+
+  return (
+    <>
+      <div className="my-2 text-accent-red">
+        {lines.map((line, i) => (
+          <div key={i}>{line}</div>
+        ))}
+      </div>
+      {crashOverlay}
+    </>
   )
 }
