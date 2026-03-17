@@ -16,12 +16,12 @@ export const skills: {
       {
         label: 'Architecture',
         detail:
-          'Designed and built an entire database query language (mmqli) including the text processing and execution logic.',
+          'Designed and built an entire mathematical query language (mmqli) including the text processing and execution logic.',
       },
       {
         label: 'Development Flow',
         detail:
-          'Comfortable compiling, building, and managing projects directly from the terminal using CMake and Make.',
+          'Comfortable compiling, building, and managing projects directly from the terminal using CMake and Ninja.',
       },
       {
         label: 'Upcoming Training',
