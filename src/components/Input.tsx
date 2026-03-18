@@ -6,6 +6,7 @@ interface InputProps {
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void
   promptUser: string
   promptHost: string
+  disabled?: boolean
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -14,16 +15,19 @@ export const Input: React.FC<InputProps> = ({
   onKeyDown,
   promptUser,
   promptHost,
+  disabled = false,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    if (disabled) return
+
     const handleGlobalClick = () => {
       inputRef.current?.focus()
     }
     window.addEventListener('click', handleGlobalClick)
     return () => window.removeEventListener('click', handleGlobalClick)
-  }, [])
+  }, [disabled])
 
   return (
     <div className="flex gap-2 items-center relative py-1">
@@ -40,7 +44,8 @@ export const Input: React.FC<InputProps> = ({
           value={value}
           onChange={onChange}
           onKeyDown={onKeyDown}
-          autoFocus
+          disabled={disabled}
+          autoFocus={!disabled}
           spellCheck={false}
           autoComplete="off"
           aria-label="Terminal input"

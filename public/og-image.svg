@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#0d1117" />
+  
+  <rect x="50" y="50" width="1100" height="530" fill="#0d1117" stroke="#e6edf3" stroke-width="2" rx="8" />
+
+  <text x="100" y="120" font-family="'JetBrains Mono', Consolas, monospace" font-size="30" font-weight="bold" fill="#f0883e">talha@quant:~$</text>
+  
+  <text x="350" y="120" font-family="'JetBrains Mono', Consolas, monospace" font-size="30" fill="#e6edf3">./whoami</text>
+
+  <rect x="520" y="95" width="20" height="30" fill="#e6edf3" />
+
+  <text x="100" y="240" font-family="'JetBrains Mono', Consolas, monospace" font-size="80" font-weight="bold" fill="#e6edf3">Muhammad Talha</text>
+
+  <text x="100" y="320" font-family="'JetBrains Mono', Consolas, monospace" font-size="35" fill="#8b949e">Algorithm Developer · Quantitative Researcher</text>
+
+  <text x="100" y="420" font-family="'JetBrains Mono', Consolas, monospace" font-size="25" fill="#e6edf3">stack:</text>
+  <rect x="230" y="395" width="100" height="35" rx="4" fill="#1f2428" stroke="#30363d" stroke-width="2" />
+  <text x="255" y="420" font-family="'JetBrains Mono', Consolas, monospace" font-size="20" font-weight="bold" fill="#f0883e">C++20</text>
+  
+  <rect x="350" y="395" width="100" height="35" rx="4" fill="#1f2428" stroke="#30363d" stroke-width="2" />
+  <text x="375" y="420" font-family="'JetBrains Mono', Consolas, monospace" font-size="20" font-weight="bold" fill="#58a6ff">Python</text>
+  
+  <rect x="470" y="395" width="100" height="35" rx="4" fill="#1f2428" stroke="#30363d" stroke-width="2" />
+  <text x="500" y="420" font-family="'JetBrains Mono', Consolas, monospace" font-size="20" font-weight="bold" fill="#79c0ff">Maths</text>
+
+  <text x="100" y="520" font-family="'JetBrains Mono', Consolas, monospace" font-size="24" fill="#8b949e">──────────────────────────────────────────────────────────────────</text>
+  <text x="100" y="550" font-family="'JetBrains Mono', Consolas, monospace" font-size="20" fill="#8b949e">Target: Hudson River Trading | Citadel Securities | Two Sigma</text>
+</svg>

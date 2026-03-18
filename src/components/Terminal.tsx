@@ -18,6 +18,7 @@ export const Terminal: React.FC = () => {
     useTerminal()
   const [isScrolledUp, setIsScrolledUp] = useState(false)
   const [scrollPercent, setScrollPercent] = useState(100)
+  const [isMobile, setIsMobile] = useState(false)
 
   const commandRegistry = useMemo(
     () => createCommandRegistry(clearHistory),
@@ -30,6 +31,13 @@ export const Terminal: React.FC = () => {
 
   const { addToHistory, getPrevious, getNext, resetIndex } = useCommandHistory()
   const { complete } = useTabCompletion(commandNames)
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   useEffect(() => {
     const container = containerRef.current
@@ -196,6 +204,7 @@ export const Terminal: React.FC = () => {
               onKeyDown={onKeyDown}
               promptUser={profile.promptUser}
               promptHost={profile.promptHost}
+              disabled={isMobile}
             />
           </div>
         )}

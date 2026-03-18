@@ -1,7 +1,17 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 export const useTypingLines = (lines: string[], speed: number = 30) => {
   const [visibleCount, setVisibleCount] = useState(0)
+
+  useEffect(() => {
+    setVisibleCount(0)
+  }, [lines])
+
+  const isComplete = visibleCount === lines.length
+
+  const skip = useCallback(() => {
+    setVisibleCount(lines.length)
+  }, [lines.length])
 
   useEffect(() => {
     if (visibleCount < lines.length) {
@@ -12,5 +22,15 @@ export const useTypingLines = (lines: string[], speed: number = 30) => {
     }
   }, [visibleCount, lines.length, speed])
 
-  return { visibleCount }
+  useEffect(() => {
+    const handleKeyDown = () => {
+      if (visibleCount < lines.length) {
+        skip()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [visibleCount, lines.length, skip])
+
+  return { visibleCount, isComplete, skip }
 }
