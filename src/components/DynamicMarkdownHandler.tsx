@@ -4,7 +4,9 @@ import { useTypingLines } from '../hooks/useTypingLines'
 
 const injectVariables = (text: string) => {
   return text.replace(/\{\{([^}]+)\}\}/g, (match, key) => {
-    return (profile as any)[key.trim()] || match
+    const validKey = key.trim() as keyof typeof profile
+    const val = profile[validKey]
+    return val !== undefined ? String(val) : match
   })
 }
 
