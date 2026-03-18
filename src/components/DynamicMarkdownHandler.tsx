@@ -10,10 +10,10 @@ const injectVariables = (text: string) => {
   })
 }
 
-export const DynamicMarkdownHandler: React.FC<{ url: string; speed?: number }> = ({
-  url,
-  speed = 40,
-}) => {
+export const DynamicMarkdownHandler: React.FC<{
+  url: string
+  speed?: number
+}> = ({ url, speed = 40 }) => {
   const [lines, setLines] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -38,7 +38,9 @@ export const DynamicMarkdownHandler: React.FC<{ url: string; speed?: number }> =
   const { visibleCount } = useTypingLines(lines, speed)
 
   if (loading)
-    return <div className="text-text-dim italic my-4 px-2">Fetching payload...</div>
+    return (
+      <div className="text-text-dim italic my-4 px-2">Fetching payload...</div>
+    )
   if (error)
     return <div className="text-accent-red my-4 px-2">Error: {error}</div>
 
@@ -46,12 +48,14 @@ export const DynamicMarkdownHandler: React.FC<{ url: string; speed?: number }> =
     <div className="my-4 font-terminal max-w-3xl">
       {lines.slice(0, visibleCount).map((line, i) => {
         const trimmed = line.trim()
-        
+
         if (trimmed === '') {
           return <div key={i} className="min-h-[1.6em]" />
         }
         if (trimmed === '---') {
-          return <div key={i} className="my-4 border-t border-border opacity-30" />
+          return (
+            <div key={i} className="my-4 border-t border-border opacity-30" />
+          )
         }
         if (line.startsWith('# ')) {
           return (
@@ -115,7 +119,10 @@ export const DynamicMarkdownHandler: React.FC<{ url: string; speed?: number }> =
         }
 
         return (
-          <p key={i} className="text-text-primary min-h-[1.6em] leading-relaxed">
+          <p
+            key={i}
+            className="text-text-primary min-h-[1.6em] leading-relaxed"
+          >
             {line}
           </p>
         )
