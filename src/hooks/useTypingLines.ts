@@ -3,9 +3,10 @@ import { useState, useEffect, useCallback } from 'react'
 export const useTypingLines = (lines: string[], speed: number = 30) => {
   const [visibleCount, setVisibleCount] = useState(0)
 
+  const linesDeps = JSON.stringify(lines)
   useEffect(() => {
     setVisibleCount(0)
-  }, [lines])
+  }, [linesDeps])
 
   const isComplete = visibleCount === lines.length
 

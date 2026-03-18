@@ -24,12 +24,8 @@ export const Nitch: React.FC = () => {
   }, [])
 
   const rows = [
-    { label: 'OS', value: 'Linux (Arch/Quant Edition)' },
-    { label: 'Age', value: `${profile.age} years` },
+    { label: 'OS', value: 'Arch Linux' },
     { label: 'Uptime', value: uptime },
-    { label: 'Shell', value: 'zsh 5.9' },
-    { label: 'Resolution', value: 'Fluid Terminal Interface' },
-    { label: 'WM/DE', value: 'Custom CRT Engine' },
   ]
 
   const { visibleCount } = useTypingLines(
