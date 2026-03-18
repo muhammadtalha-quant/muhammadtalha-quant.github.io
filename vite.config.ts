@@ -13,16 +13,9 @@ export default defineConfig({
   ],
   build: {
     target: 'es2020',
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-      },
-    },
     rollupOptions: {},
     reportCompressedSize: true,
-    chunkSizeWarningLimit: 150,
+    chunkSizeWarningLimit: 500,
   },
   server: {
     port: 3000,
