@@ -20,16 +20,7 @@ export default defineConfig({
         drop_debugger: true,
       },
     },
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('framer-motion')) return 'motion'
-            if (id.includes('react') || id.includes('react-dom')) return 'vendor'
-          }
-        },
-      },
-    },
+    rollupOptions: {},
     reportCompressedSize: true,
     chunkSizeWarningLimit: 150,
   },
