@@ -53,9 +53,7 @@ export const DynamicMarkdownHandler: React.FC<{
           return <div key={i} className="min-h-[1.6em]" />
         }
         if (trimmed === '---') {
-          return (
-            <div key={i} className="my-4 border-t border-border opacity-30" />
-          )
+          return <div key={i} className="my-8" />
         }
         if (line.startsWith('# ')) {
           return (
@@ -66,11 +64,8 @@ export const DynamicMarkdownHandler: React.FC<{
         }
         if (line.startsWith('## ')) {
           return (
-            <div
-              key={i}
-              className="text-text-dim uppercase text-[11px] font-bold tracking-widest mb-3 mt-6 flex items-center gap-2"
-            >
-              <span className="text-accent-amber">●</span> {line.slice(3)}
+            <div key={i} className="label-md mb-3 mt-8 flex items-center gap-2">
+              <span className="text-cyan">●</span> {line.slice(3)}
             </div>
           )
         }
@@ -78,7 +73,7 @@ export const DynamicMarkdownHandler: React.FC<{
           return (
             <div
               key={i}
-              className="mt-4 pt-4 border-t border-border/30 text-text-secondary italic"
+              className="mt-6 pt-2 text-text-secondary italic ghost-border p-4 rounded-sm"
             >
               "{line.slice(2).trim()}"
             </div>
@@ -86,7 +81,10 @@ export const DynamicMarkdownHandler: React.FC<{
         }
         if (line.startsWith('- ')) {
           return (
-            <div key={i} className="pl-4 text-accent-green my-1">
+            <div
+              key={i}
+              className="pl-4 text-acid my-1 hover-surface py-1 rounded-sm"
+            >
               ◆ {line.slice(2)}
             </div>
           )

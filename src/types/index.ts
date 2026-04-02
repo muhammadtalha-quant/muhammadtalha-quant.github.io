@@ -1,11 +1,18 @@
 import React from 'react'
 
+export interface TerminalContext {
+  clearSoft: () => void
+  clearHard: () => void
+  resumeSession: () => void
+}
+
 export interface Command {
   name: string
   aliases: string[]
   description: string
   category: 'identity' | 'work' | 'contact' | 'system'
-  handler: (args: string[]) => React.ReactNode | Promise<React.ReactNode>
+  isHidden?: boolean
+  handler: (args: string[], ctx: TerminalContext) => React.ReactNode | Promise<React.ReactNode> | void
 }
 
 export interface OutputEntry {
@@ -13,6 +20,7 @@ export interface OutputEntry {
   type: 'input' | 'output' | 'error' | 'system'
   content: React.ReactNode
   timestamp: Date
+  isFaded?: boolean
 }
 
 export interface SkillCategory {

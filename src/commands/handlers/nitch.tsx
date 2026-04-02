@@ -35,7 +35,7 @@ export const Nitch: React.FC = () => {
 
   return (
     <div className="my-4 font-terminal flex flex-col md:flex-row gap-8">
-      <div className="text-accent-amber select-none hidden md:block leading-none">
+      <div className="text-violet select-none hidden md:block leading-none">
         <pre className="text-[12px] whitespace-pre overflow-x-visible">
           {`███╗   ███╗████████╗
 ████╗ ████║╚══██╔══╝
@@ -47,14 +47,15 @@ export const Nitch: React.FC = () => {
       </div>
 
       <div className="flex-1">
-        <div className="text-accent-green font-bold text-lg mb-2 flex items-center gap-2">
-          {profile.promptUser}@{profile.promptHost}
+        <div className="font-bold text-lg mb-2 flex items-center gap-2">
+          <span className="text-cyan">{profile.promptUser}</span>
+          <span className="text-muted-indigo">@</span>
+          <span className="text-violet">{profile.promptHost}</span>
         </div>
-        <div className="text-text-dim mb-2">──────────────────────────────</div>
-        <div className="space-y-1">
+        <div className="space-y-1 mt-4">
           {rows.slice(0, visibleCount).map((row, i) => (
             <div key={i} className="flex gap-4">
-              <span className="text-accent-amber font-bold w-24 shrink-0">
+              <span className="text-violet font-bold w-24 shrink-0">
                 {row.label}
               </span>
               <span className="text-text-primary">{row.value}</span>
@@ -65,15 +66,13 @@ export const Nitch: React.FC = () => {
         {visibleCount === rows.length && (
           <div className="mt-4 grid grid-cols-1 gap-1">
             <div className="flex gap-4">
-              <span className="text-accent-amber font-bold w-24 shrink-0">
-                C++
-              </span>
+              <span className="text-violet font-bold w-24 shrink-0">C++</span>
               <span className="text-text-primary">
                 Systems, HFT engines, Optimizers
               </span>
             </div>
             <div className="flex gap-4">
-              <span className="text-accent-amber font-bold w-24 shrink-0">
+              <span className="text-violet font-bold w-24 shrink-0">
                 Python
               </span>
               <span className="text-text-primary">
@@ -81,7 +80,7 @@ export const Nitch: React.FC = () => {
               </span>
             </div>
             <div className="flex gap-4">
-              <span className="text-accent-amber font-bold w-24 shrink-0">
+              <span className="text-violet font-bold w-24 shrink-0">
                 Targets
               </span>
               <span className="text-text-primary">

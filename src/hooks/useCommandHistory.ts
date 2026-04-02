@@ -1,8 +1,22 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 
 export const useCommandHistory = (maxHistory = 100) => {
   const [history, setHistory] = useState<string[]>([])
   const [index, setIndex] = useState(-1)
+  const [lastSession, setLastSession] = useState<string[]>([])
+
+  useEffect(() => {
+    const saved = localStorage.getItem('terminal_command_history')
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed)) {
+          setHistory(parsed)
+          setLastSession(parsed)
+        }
+      } catch (e) {}
+    }
+  }, [])
 
   const addToHistory = useCallback(
     (command: string) => {
@@ -12,6 +26,7 @@ export const useCommandHistory = (maxHistory = 100) => {
           command,
           ...prev.filter((c) => c !== command),
         ].slice(0, maxHistory)
+        localStorage.setItem('terminal_command_history', JSON.stringify(newHistory))
         return newHistory
       })
       setIndex(-1)
@@ -40,5 +55,5 @@ export const useCommandHistory = (maxHistory = 100) => {
     setIndex(-1)
   }, [])
 
-  return { addToHistory, getPrevious, getNext, resetIndex, history }
+  return { addToHistory, getPrevious, getNext, resetIndex, history, lastSession }
 }

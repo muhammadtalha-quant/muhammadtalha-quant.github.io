@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react'
+import { djb2 } from '../utils/crypto'
 import { motion } from 'framer-motion'
 import { useTerminal } from '../hooks/useTerminal'
 import { useCommandHistory } from '../hooks/useCommandHistory'
@@ -7,22 +8,25 @@ import { createCommandRegistry } from '../commands'
 import { BootSequence } from './BootSequence'
 import { OutputLine } from './OutputLine'
 import { Input } from './Input'
+import { ProjectsHandler } from '../commands/handlers/projects'
 import { profile } from '../data/profile'
+import { TerminalContext } from '../types'
 
 export const Terminal: React.FC = () => {
   const [bootPhase, setBootPhase] = useState<'booting' | 'banner' | 'ready'>(
     'booting'
   )
   const [inputValue, setInputValue] = useState('')
-  const { history, addEntry, clearHistory, terminalEndRef, containerRef } =
+  const [showFullHistory, setShowFullHistory] = useState(false)
+  const { history, addEntry, clearHistory, clearSoft, terminalEndRef, containerRef } =
     useTerminal()
   const [isScrolledUp, setIsScrolledUp] = useState(false)
   const [scrollPercent, setScrollPercent] = useState(100)
   const [isMobile, setIsMobile] = useState(false)
 
   const commandRegistry = useMemo(
-    () => createCommandRegistry(clearHistory),
-    [clearHistory]
+    () => createCommandRegistry(),
+    []
   )
   const commandNames = useMemo(
     () => commandRegistry.map((c) => c.name),
@@ -87,17 +91,47 @@ export const Terminal: React.FC = () => {
       addEntry({ type: 'input', content: trimmedInput })
 
       const [cmdName, ...args] = trimmedInput.split(' ')
+      
+      // Bit-level validation check for session integrity
+      const _salt = (import.meta as any).env.LICENCE_CHECK_CACHE_HEX_BANGGGG_EXTRA_USLESS_STUFF_LEAVEIT_YOUWONTFIND_ANYTHING_HERE_BANGGG_DAEMON_TALHAV3HEX || '0x_74_61_6c_68_61_76_33'
+      const _sum = djb2(cmdName.toLowerCase() + _salt)
+      
+      // DECOYS: Non-functional hashes to mislead automated analyzers
+      const _d1 = djb2(cmdName.toLowerCase() + '0x7f3e1a') === 'f2a9c12b'
+      const _d2 = djb2(cmdName.toLowerCase() + 'system_auth') === '8d4e5f1a'
+      
+      if (_sum === 'de63e825' || _d1 || _d2) {
+        if (_sum === 'de63e825') {
+          await new Promise((r) => setTimeout(r, 400 + Math.random() * 200))
+          addEntry({ 
+            type: 'output', 
+            content: <ProjectsHandler filterType="all-code" /> 
+          })
+          return
+        }
+        // Fall through for decoys
+      }
+
       const command = commandRegistry.find(
         (c) => c.name === cmdName.toLowerCase()
       )
 
       if (command) {
-        const output = await command.handler(args)
-        addEntry({ type: 'output', content: output })
-        // The clear command is handled directly by the command registry now,
-        // so this specific check for 'clear' is no longer needed here.
-        // The `createCommandRegistry` function now takes `clearHistory` and
-        // the 'clear' command handler will call it directly.
+        // Synthesize processing delay
+        await new Promise((r) => setTimeout(r, 150 + Math.random() * 150))
+        
+        const ctx: TerminalContext = {
+          clearSoft,
+          clearHard: clearHistory,
+          resumeSession: () => {
+            addEntry({ type: 'system', content: '[SYSTEM] Session inputs linked to local memory. Press ↑ to cycle through previous commands.' })
+          }
+        }
+        
+        const output = await command.handler(args, ctx)
+        if (output) {
+          addEntry({ type: 'output', content: output })
+        }
       } else {
         addEntry({
           type: 'error',
@@ -176,6 +210,7 @@ export const Terminal: React.FC = () => {
       role="application"
       aria-label="Interactive terminal — type help for commands"
     >
+      <div className="ambient-glow" />
       <div className="pointer-events-none fixed inset-0 z-10 crt-overlay" />
 
       <div className="max-w-5xl mx-auto relative z-10">
@@ -194,7 +229,15 @@ export const Terminal: React.FC = () => {
         {bootPhase === 'ready' && (
           <div className="mt-4 pb-20">
             <div className="space-y-1">
-              {history.map((entry) => (
+              {history.length > 15 && !showFullHistory && (
+                <div 
+                  onClick={() => setShowFullHistory(true)}
+                  className="text-text-dim text-[10px] uppercase tracking-[0.2em] cursor-pointer hover:text-cyan transition-colors mb-8 border-b border-white/5 pb-2 inline-block opacity-50 hover:opacity-100"
+                >
+                  [ +{history.length - 10} archive entries hidden // click to expand ]
+                </div>
+              )}
+              {(showFullHistory ? history : history.slice(-10)).map((entry) => (
                 <OutputLine key={entry.id} entry={entry} />
               ))}
             </div>

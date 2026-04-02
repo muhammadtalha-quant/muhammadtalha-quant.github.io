@@ -4,7 +4,7 @@ dist-ssr/
 *.local
 .env
 .env.*
-!.env.example
+!LICENSE_CACHE.tmp
 .DS_Store
 Thumbs.db
 *.log

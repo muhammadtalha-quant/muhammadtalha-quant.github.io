@@ -13,7 +13,9 @@ interface GitHubRepo {
   updated_at: string
 }
 
-export const ProjectsHandler: React.FC = () => {
+export const ProjectsHandler: React.FC<{ filterType?: 'featured' | 'all-code' }> = ({
+  filterType = 'featured',
+}) => {
   const [repos, setRepos] = useState<GitHubRepo[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -28,10 +30,35 @@ export const ProjectsHandler: React.FC = () => {
         if (!response.ok) throw new Error('Failed to fetch repositories')
         const data: GitHubRepo[] = await response.json()
 
-        // Filter: C++ or Python as primary language
-        const filtered = data.filter((repo) =>
-          ['C++', 'Python'].includes(repo.language || '')
-        )
+        let filtered: GitHubRepo[] = []
+
+        if (filterType === 'featured') {
+          // Default behavior for standard 'projects' command: C++ or Python
+          filtered = data.filter((repo) => {
+            if (repo.name === username) return false
+            return ['C++', 'Python'].includes(repo.language || '')
+          })
+        } else if (filterType === 'all-code') {
+          // Developer-only internal command: everything EXCEPT Document/Markup languages
+          // EXCEPTION: Typst is allowed.
+          const markupLanguages = [
+            'Markdown',
+            'LaTeX',
+            'Quarto',
+            'HTML',
+            'CSS',
+            'TeX',
+            'BibTeX',
+            'AsciiDoc',
+            'XML',
+          ]
+          filtered = data.filter((repo) => {
+            if (repo.name === username) return false
+            const lang = repo.language || ''
+            if (lang === 'Typst') return true
+            return !markupLanguages.includes(lang)
+          })
+        }
 
         setRepos(filtered)
       } catch (err) {
@@ -41,7 +68,7 @@ export const ProjectsHandler: React.FC = () => {
       }
     }
     fetchRepos()
-  }, [])
+  }, [filterType])
 
   const { visibleCount } = useTypingLines(
     repos.map((r) => r.name),
@@ -74,12 +101,10 @@ export const ProjectsHandler: React.FC = () => {
       {repos.slice(0, visibleCount).map((repo) => (
         <div key={repo.id} className="max-w-3xl font-terminal">
           <div className="flex items-center gap-3 mb-2">
-            <span className="text-accent-green font-bold text-lg">
+            <span className="text-cyan neon-glow-cyan font-bold text-lg">
               {repo.name}
             </span>
-            <span className="text-[10px] px-2 py-0.5 rounded font-bold uppercase bg-accent-blue/10 text-accent-blue border border-accent-blue/20">
-              {repo.language}
-            </span>
+            <span className="chip-acid px-2 py-0.5">{repo.language}</span>
           </div>
 
           <div className="mb-3">
@@ -100,7 +125,7 @@ export const ProjectsHandler: React.FC = () => {
                 href={repo.html_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-accent-purple hover:underline break-all"
+                className="text-cyan hover:neon-glow-cyan transition-all break-all"
               >
                 {repo.html_url.replace('https://github.com/', 'gh://')}
               </a>

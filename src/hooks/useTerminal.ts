@@ -20,12 +20,17 @@ export const useTerminal = () => {
         ...entry,
         id: crypto.randomUUID(),
         timestamp: new Date(),
+        isFaded: false
       }
       setHistory((prev) => {
         const updated = [...prev, newEntry]
-        return updated.length > 500
-          ? updated.slice(updated.length - 500)
-          : updated
+        // Keep 20 recent, fade older ones to reduce cognitive load
+        return updated.map((item, idx) => {
+          if (idx < updated.length - 20) {
+            return { ...item, isFaded: true }
+          }
+          return item
+        }).slice(-500)
       })
     },
     []
@@ -35,10 +40,15 @@ export const useTerminal = () => {
     setHistory([])
   }, [])
 
+  const clearSoft = useCallback(() => {
+    setHistory(prev => prev.map(item => ({ ...item, isFaded: true })))
+  }, [])
+
   return {
     history,
     addEntry,
     clearHistory,
+    clearSoft,
     terminalEndRef,
     containerRef,
     scrollToBottom,

@@ -9,19 +9,18 @@ export const Help: React.FC<{ registry: Command[] }> = ({ registry }) => {
     work: [],
     contact: [],
     system: [],
+    navigation: [],
   }
 
   registry
-    .filter((cmd) => cmd.name !== 'mail')
+    .filter((cmd) => cmd.name !== 'mail' && !cmd.isHidden)
     .forEach((cmd) => categories[cmd.category].push(cmd))
 
   return (
     <div className="my-4 space-y-4">
       {Object.entries(categories).map(([category, cmds]) => (
         <div key={category}>
-          <div className="text-text-dim uppercase text-[11px] font-bold tracking-widest mb-2 mt-4 first:mt-0">
-            {category}
-          </div>
+          <div className="label-md mb-2 mt-4 first:mt-0">{category}</div>
           <div className="grid grid-cols-[140px_1fr] gap-4">
             {cmds.map((cmd) => (
               <React.Fragment key={cmd.name}>
@@ -150,7 +149,7 @@ export const Shutdown: React.FC = () => {
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="border border-border bg-bg-secondary text-accent-amber px-6 py-2 hover:bg-bg-tertiary transition-colors cursor-pointer font-terminal text-sm"
+              className="btn-ghost transition-colors cursor-pointer font-terminal text-sm px-6 py-2"
             >
               [ Start ]
             </button>
