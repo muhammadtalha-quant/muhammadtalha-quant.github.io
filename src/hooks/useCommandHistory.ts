@@ -14,7 +14,9 @@ export const useCommandHistory = (maxHistory = 100) => {
           setHistory(parsed)
           setLastSession(parsed)
         }
-      } catch (e) {}
+      } catch {
+        // Ignore parsing errors for saved history
+      }
     }
   }, [])
 
@@ -26,7 +28,10 @@ export const useCommandHistory = (maxHistory = 100) => {
           command,
           ...prev.filter((c) => c !== command),
         ].slice(0, maxHistory)
-        localStorage.setItem('terminal_command_history', JSON.stringify(newHistory))
+        localStorage.setItem(
+          'terminal_command_history',
+          JSON.stringify(newHistory)
+        )
         return newHistory
       })
       setIndex(-1)
@@ -55,5 +60,12 @@ export const useCommandHistory = (maxHistory = 100) => {
     setIndex(-1)
   }, [])
 
-  return { addToHistory, getPrevious, getNext, resetIndex, history, lastSession }
+  return {
+    addToHistory,
+    getPrevious,
+    getNext,
+    resetIndex,
+    history,
+    lastSession,
+  }
 }

@@ -154,14 +154,23 @@
 }
 
 @keyframes ambient-pulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 0.8; }
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+  }
 }
 
 .ambient-glow {
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at center, rgba(0,245,255,0.03) 0%, transparent 60%);
+  background: radial-gradient(
+    circle at center,
+    rgba(0, 245, 255, 0.03) 0%,
+    transparent 60%
+  );
   pointer-events: none;
   z-index: 1;
   animation: ambient-pulse 8s ease-in-out infinite;

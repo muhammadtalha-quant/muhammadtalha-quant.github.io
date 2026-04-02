@@ -14,7 +14,7 @@ export const createCommandRegistry = (): Command[] => {
       aliases: [],
       description: 'Who I am and what I am building toward',
       category: 'identity',
-      handler: (_args: string[], _ctx: TerminalContext) => {
+      handler: () => {
         return <WhoAmI />
       },
     },
@@ -23,7 +23,7 @@ export const createCommandRegistry = (): Command[] => {
       aliases: [],
       description: 'Extended background and philosophy (Full View)',
       category: 'identity',
-      handler: (_args: string[], _ctx: TerminalContext) => {
+      handler: () => {
         return <Bio />
       },
     },
@@ -32,7 +32,7 @@ export const createCommandRegistry = (): Command[] => {
       aliases: [],
       description: 'Display system info panel (Full View)',
       category: 'identity',
-      handler: (_args: string[], _ctx: TerminalContext) => {
+      handler: () => {
         return <Nitch />
       },
     },
@@ -41,7 +41,7 @@ export const createCommandRegistry = (): Command[] => {
       aliases: [],
       description: 'List all active projects (Full View)',
       category: 'work',
-      handler: (_args: string[], _ctx: TerminalContext) => {
+      handler: () => {
         return <ProjectsHandler filterType="featured" />
       },
     },
@@ -50,7 +50,7 @@ export const createCommandRegistry = (): Command[] => {
       aliases: [],
       description: 'Full technical skill matrix (Full View)',
       category: 'work',
-      handler: (_args: string[], _ctx: TerminalContext) => {
+      handler: () => {
         return <Skills />
       },
     },
@@ -59,21 +59,21 @@ export const createCommandRegistry = (): Command[] => {
       aliases: [],
       description: 'Open LinkedIn profile in new tab',
       category: 'contact',
-      handler: (_args: string[], _ctx: TerminalContext) => <ContactsHandler type="linkedin" />,
+      handler: () => <ContactsHandler type="linkedin" />,
     },
     {
       name: 'gh',
       aliases: [],
       description: 'Open GitHub profile in new tab',
       category: 'contact',
-      handler: (_args: string[], _ctx: TerminalContext) => <ContactsHandler type="gh" />,
+      handler: () => <ContactsHandler type="gh" />,
     },
     {
       name: 'mailto',
       aliases: [],
       description: 'Open mail client',
       category: 'contact',
-      handler: (_args: string[], _ctx: TerminalContext) => <ContactsHandler type="mailto" />,
+      handler: () => <ContactsHandler type="mailto" />,
     },
     {
       name: 'clear',
@@ -83,20 +83,33 @@ export const createCommandRegistry = (): Command[] => {
       handler: (args: string[], ctx: TerminalContext) => {
         if (args[0] === 'soft') {
           ctx.clearSoft()
-          return <div className="text-text-dim italic">Soft clearing outputs. Previous lines retained in history buffer.</div>
+          return (
+            <div className="text-text-dim italic">
+              Soft clearing outputs. Previous lines retained in history buffer.
+            </div>
+          )
         }
         ctx.clearHard()
-        return <div className="text-text-primary">Terminal cleared. Type 'help' to see available commands.</div>
+        return (
+          <div className="text-text-primary">
+            Terminal cleared. Type 'help' to see available commands.
+          </div>
+        )
       },
     },
     {
       name: 'resume',
       aliases: ['last-session'],
-      description: 'Restore the keyboard history buffer from the previous session',
+      description:
+        'Restore the keyboard history buffer from the previous session',
       category: 'system',
-      handler: (_args: string[], ctx: TerminalContext) => {
+      handler: (_: string[], ctx: TerminalContext) => {
         ctx.resumeSession()
-        return <div className="text-acid italic">Session successfully linked to local memory. Press ↑ to navigate.</div>
+        return (
+          <div className="text-acid italic">
+            Session successfully linked to local memory. Press ↑ to navigate.
+          </div>
+        )
       },
     },
     {
@@ -104,8 +117,12 @@ export const createCommandRegistry = (): Command[] => {
       aliases: [],
       description: 'View command session memory status',
       category: 'system',
-      handler: (_args: string[], _ctx: TerminalContext) => {
-        return <div className="text-text-dim">Command history synced to local storage. Max 100 entries.</div>
+      handler: () => {
+        return (
+          <div className="text-text-dim">
+            Command history synced to local storage. Max 100 entries.
+          </div>
+        )
       },
     },
     {
@@ -113,7 +130,7 @@ export const createCommandRegistry = (): Command[] => {
       aliases: [],
       description: 'Show manual and command index',
       category: 'system',
-      handler: (_args: string[], _ctx: TerminalContext) => {
+      handler: () => {
         return <Help registry={registry} />
       },
     },
@@ -122,21 +139,21 @@ export const createCommandRegistry = (): Command[] => {
       aliases: [],
       description: 'Download resume PDF',
       category: 'system',
-      handler: (_args: string[], _ctx: TerminalContext) => <GetCV />,
+      handler: () => <GetCV />,
     },
     {
       name: 'reboot',
       aliases: [],
       description: 'Restart the terminal session',
       category: 'system',
-      handler: (_args: string[], _ctx: TerminalContext) => <Reboot />,
+      handler: () => <Reboot />,
     },
     {
       name: 'shutdown',
       aliases: [],
       description: 'Shut down the terminal',
       category: 'system',
-      handler: (_args: string[], _ctx: TerminalContext) => <Shutdown />,
+      handler: () => <Shutdown />,
     },
   ]
 

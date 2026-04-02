@@ -20,17 +20,19 @@ export const useTerminal = () => {
         ...entry,
         id: crypto.randomUUID(),
         timestamp: new Date(),
-        isFaded: false
+        isFaded: false,
       }
       setHistory((prev) => {
         const updated = [...prev, newEntry]
         // Keep 20 recent, fade older ones to reduce cognitive load
-        return updated.map((item, idx) => {
-          if (idx < updated.length - 20) {
-            return { ...item, isFaded: true }
-          }
-          return item
-        }).slice(-500)
+        return updated
+          .map((item, idx) => {
+            if (idx < updated.length - 20) {
+              return { ...item, isFaded: true }
+            }
+            return item
+          })
+          .slice(-500)
       })
     },
     []
@@ -41,7 +43,7 @@ export const useTerminal = () => {
   }, [])
 
   const clearSoft = useCallback(() => {
-    setHistory(prev => prev.map(item => ({ ...item, isFaded: true })))
+    setHistory((prev) => prev.map((item) => ({ ...item, isFaded: true })))
   }, [])
 
   return {

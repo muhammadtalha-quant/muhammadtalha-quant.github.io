@@ -12,7 +12,10 @@ export interface Command {
   description: string
   category: 'identity' | 'work' | 'contact' | 'system'
   isHidden?: boolean
-  handler: (args: string[], ctx: TerminalContext) => React.ReactNode | Promise<React.ReactNode> | void
+  handler: (
+    args: string[],
+    ctx: TerminalContext
+  ) => React.ReactNode | Promise<React.ReactNode> | void
 }
 
 export interface OutputEntry {

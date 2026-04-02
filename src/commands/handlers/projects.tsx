@@ -13,9 +13,9 @@ interface GitHubRepo {
   updated_at: string
 }
 
-export const ProjectsHandler: React.FC<{ filterType?: 'featured' | 'all-code' }> = ({
-  filterType = 'featured',
-}) => {
+export const ProjectsHandler: React.FC<{
+  filterType?: 'featured' | 'all-code'
+}> = ({ filterType = 'featured' }) => {
   const [repos, setRepos] = useState<GitHubRepo[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

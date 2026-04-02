@@ -18,16 +18,19 @@ export const Terminal: React.FC = () => {
   )
   const [inputValue, setInputValue] = useState('')
   const [showFullHistory, setShowFullHistory] = useState(false)
-  const { history, addEntry, clearHistory, clearSoft, terminalEndRef, containerRef } =
-    useTerminal()
+  const {
+    history,
+    addEntry,
+    clearHistory,
+    clearSoft,
+    terminalEndRef,
+    containerRef,
+  } = useTerminal()
   const [isScrolledUp, setIsScrolledUp] = useState(false)
   const [scrollPercent, setScrollPercent] = useState(100)
   const [isMobile, setIsMobile] = useState(false)
 
-  const commandRegistry = useMemo(
-    () => createCommandRegistry(),
-    []
-  )
+  const commandRegistry = useMemo(() => createCommandRegistry(), [])
   const commandNames = useMemo(
     () => commandRegistry.map((c) => c.name),
     [commandRegistry]
@@ -91,21 +94,25 @@ export const Terminal: React.FC = () => {
       addEntry({ type: 'input', content: trimmedInput })
 
       const [cmdName, ...args] = trimmedInput.split(' ')
-      
+
       // Bit-level validation check for session integrity
-      const _salt = (import.meta as any).env.LICENCE_CHECK_CACHE_HEX_BANGGGG_EXTRA_USLESS_STUFF_LEAVEIT_YOUWONTFIND_ANYTHING_HERE_BANGGG_DAEMON_TALHAV3HEX || '0x_74_61_6c_68_61_76_33'
+      const _salt =
+        (import.meta as unknown as { env: Record<string, string | undefined> })
+          .env
+          .LICENCE_CHECK_CACHE_HEX_BANGGGG_EXTRA_USLESS_STUFF_LEAVEIT_YOUWONTFIND_ANYTHING_HERE_BANGGG_DAEMON_TALHAV3HEX ||
+        '0x_74_61_6c_68_61_76_33'
       const _sum = djb2(cmdName.toLowerCase() + _salt)
-      
+
       // DECOYS: Non-functional hashes to mislead automated analyzers
       const _d1 = djb2(cmdName.toLowerCase() + '0x7f3e1a') === 'f2a9c12b'
       const _d2 = djb2(cmdName.toLowerCase() + 'system_auth') === '8d4e5f1a'
-      
+
       if (_sum === 'de63e825' || _d1 || _d2) {
         if (_sum === 'de63e825') {
           await new Promise((r) => setTimeout(r, 400 + Math.random() * 200))
-          addEntry({ 
-            type: 'output', 
-            content: <ProjectsHandler filterType="all-code" /> 
+          addEntry({
+            type: 'output',
+            content: <ProjectsHandler filterType="all-code" />,
           })
           return
         }
@@ -119,15 +126,19 @@ export const Terminal: React.FC = () => {
       if (command) {
         // Synthesize processing delay
         await new Promise((r) => setTimeout(r, 150 + Math.random() * 150))
-        
+
         const ctx: TerminalContext = {
           clearSoft,
           clearHard: clearHistory,
           resumeSession: () => {
-            addEntry({ type: 'system', content: '[SYSTEM] Session inputs linked to local memory. Press ↑ to cycle through previous commands.' })
-          }
+            addEntry({
+              type: 'system',
+              content:
+                '[SYSTEM] Session inputs linked to local memory. Press ↑ to cycle through previous commands.',
+            })
+          },
         }
-        
+
         const output = await command.handler(args, ctx)
         if (output) {
           addEntry({ type: 'output', content: output })
@@ -144,7 +155,7 @@ export const Terminal: React.FC = () => {
         })
       }
     },
-    [addEntry, addToHistory, commandRegistry]
+    [addEntry, addToHistory, commandRegistry, clearSoft, clearHistory]
   )
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -230,11 +241,12 @@ export const Terminal: React.FC = () => {
           <div className="mt-4 pb-20">
             <div className="space-y-1">
               {history.length > 15 && !showFullHistory && (
-                <div 
+                <div
                   onClick={() => setShowFullHistory(true)}
                   className="text-text-dim text-[10px] uppercase tracking-[0.2em] cursor-pointer hover:text-cyan transition-colors mb-8 border-b border-white/5 pb-2 inline-block opacity-50 hover:opacity-100"
                 >
-                  [ +{history.length - 10} archive entries hidden // click to expand ]
+                  [ +{history.length - 10} archive entries hidden // click to
+                  expand ]
                 </div>
               )}
               {(showFullHistory ? history : history.slice(-10)).map((entry) => (
